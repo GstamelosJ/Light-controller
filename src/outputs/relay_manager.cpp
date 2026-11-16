@@ -5,7 +5,9 @@ void RelayManager::begin(
 {
     _channels = channels;
 
-    for(int i=0;i<MAX_CHANNELS;i++)
+    for(int i = 0;
+        i < MAX_CHANNELS;
+        i++)
     {
         pinMode(
             _channels[i].relayPin,
@@ -14,6 +16,9 @@ void RelayManager::begin(
         digitalWrite(
             _channels[i].relayPin,
             LOW);
+
+        _channels[i].currentState =
+            false;
     }
 }
 
@@ -22,19 +27,27 @@ void RelayManager::set(
     bool state)
 {
     if(channel >= MAX_CHANNELS)
+    {
         return;
+    }
 
     digitalWrite(
         _channels[channel].relayPin,
         state);
 
-    _channels[channel].currentState =
-        state;
+    _channels[channel]
+        .currentState =
+            state;
 }
 
 bool RelayManager::get(
     uint8_t channel)
 {
+    if(channel >= MAX_CHANNELS)
+    {
+        return false;
+    }
+
     return _channels[channel]
             .currentState;
 }

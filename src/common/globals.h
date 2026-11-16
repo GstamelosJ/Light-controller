@@ -11,6 +11,9 @@
 #include "../menu/menu_manager.h"
 #include "../drivers/remote_buttons.h"
 #include "../drivers/buttons.h"
+#include "../network/wifi_manager.h"
+
+extern WiFiManager WifiMgr;
 
 extern MenuManager Menu;
 extern LCDManager LCD;

@@ -43,8 +43,8 @@ bool RemoteButtons::isAvailable() const
 void RemoteButtons::update()
 {
     /*
-     * Αν δεν βρέθηκε slave,
-     * επαναλαμβάνουμε probe κάθε 10 sec
+     * Αν δεν υπάρχει slave,
+     * ξανακάνε probe κάθε 10 sec
      */
     if(!_available)
     {

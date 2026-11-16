@@ -11,3 +11,4 @@ LCDManager LCD;
 MenuManager Menu;
 Buttons Btns;
 RemoteButtons RemoteKeys;
+WiFiManager WifiMgr;

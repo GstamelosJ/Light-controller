@@ -20,6 +20,9 @@ public:
 
     void showEventEditor();
 	
+	void showDaysEditor();
+	void showEventAction();
+	
 void printLine(
         uint8_t row,
         const char* text);

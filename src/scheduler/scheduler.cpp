@@ -1,9 +1,10 @@
 #include "scheduler.h"
 
 #include <time.h>
+
 static bool dayMatches(
-        uint8_t mask,
-        int day)
+    uint8_t mask,
+    int day)
 {
     switch(day)
     {
@@ -31,6 +32,7 @@ static bool dayMatches(
 
     return false;
 }
+
 void Scheduler::begin(
     ChannelConfig channels[],
     RelayManager* relays,
@@ -42,6 +44,7 @@ void Scheduler::begin(
 
     _astro = astro;
 }
+
 void Scheduler::run()
 {
     time_t nowEpoch;
@@ -55,58 +58,106 @@ void Scheduler::run()
         &now);
 
     int minuteNow =
-        now.tm_hour * 60 +
-        now.tm_min;
+        (now.tm_hour * 60)
+        + now.tm_min;
 
-    if(minuteNow ==
-       _lastMinute)
+    /*
+     * Εκτέλεση μόνο μία φορά
+     * ανά λεπτό
+     */
+    if(minuteNow == _lastMinute)
     {
         return;
     }
 
-    _lastMinute = minuteNow;
-	
-for(int channel = 0;
+    _lastMinute =
+        minuteNow;
+
+    for(int channel = 0;
         channel < MAX_CHANNELS;
         channel++)
     {
         ChannelConfig& ch =
             _channels[channel];
 
+        /*
+         * Disabled channel
+         */
         if(!ch.enabled)
+        {
             continue;
+        }
 
-        if(ch.mode != AUTO_MODE)
+        /*
+         * Manual modes
+         */
+        if(ch.mode == MANUAL_ON)
+        {
+            _relays->set(
+                channel,
+                true);
+
             continue;
-for(int i=0;
-            i<ch.eventCount;
+        }
+
+        if(ch.mode == MANUAL_OFF)
+        {
+            _relays->set(
+                channel,
+                false);
+
+            continue;
+        }
+
+        if(ch.mode == DISABLED_MODE)
+        {
+            _relays->set(
+                channel,
+                false);
+
+            continue;
+        }
+
+        /*
+         * AUTO MODE
+         */
+        for(int i = 0;
+            i < ch.eventCount;
             i++)
         {
             ScheduleEvent& ev =
                 ch.events[i];
 
             if(!ev.enabled)
+            {
                 continue;
-if(!dayMatches(
+            }
+
+            if(!dayMatches(
                     ev.daysMask,
                     now.tm_wday + 1))
             {
                 continue;
             }
-if(ev.lastExecutionDay ==
+
+            /*
+             * Ήδη εκτελέστηκε σήμερα
+             */
+            if(ev.lastExecutionDay ==
                now.tm_yday)
             {
                 continue;
             }
-int triggerMinute = 0;
+
+            int triggerMinute = 0;
 
             switch(ev.trigger)
             {
                 case FIXED_TIME:
 
                     triggerMinute =
-                        ev.hour * 60 +
-                        ev.minute;
+                        (ev.hour * 60)
+                        + ev.minute;
 
                     break;
 
@@ -126,7 +177,21 @@ int triggerMinute = 0;
 
                     break;
             }
-if(triggerMinute ==
+
+            /*
+             * Προστασία ορίων
+             */
+            if(triggerMinute < 0)
+            {
+                triggerMinute = 0;
+            }
+
+            if(triggerMinute > 1439)
+            {
+                triggerMinute = 1439;
+            }
+
+            if(triggerMinute ==
                minuteNow)
             {
                 _relays->set(
@@ -139,4 +204,3 @@ if(triggerMinute ==
         }
     }
 }
-			

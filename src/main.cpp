@@ -64,11 +64,11 @@ void createDefaults()
 
     strcpy(
         Config.config.network.wifiSSID,
-        "");
+        "COSMOTE-189DDC");
 
     strcpy(
         Config.config.network.wifiPASS,
-        "");
+        "UXYebdfUddddKqAq");
 
     //--------------------------------------------------
     // Demo Schedule CH1
@@ -104,6 +104,14 @@ void setup()
     Serial.println("Lighting Controller");
     Serial.println("Milestone 2.8");
     Serial.println("--------------------------------");
+//wifitest
+    strcpy(
+        Config.config.network.wifiSSID,
+        "COSMOTE-189DDC");
+
+    strcpy(
+        Config.config.network.wifiPASS,
+        "UXYebdfUddddKqAq");
 
     //--------------------------------------------------
     // Configuration
@@ -125,10 +133,29 @@ void setup()
     }
     else
     {
+        if(strlen(
+                Config.config.network.wifiSSID)
+                == 0)
+        {
+            Serial.println(
+                "Stored WiFi credentials were empty; restoring defaults.");
+
+            strcpy(
+                Config.config.network.wifiSSID,
+                "COSMOTE-189DDC");
+
+            strcpy(
+                Config.config.network.wifiPASS,
+                "UXYebdfUddddKqAq");
+
+            Config.save();
+        }
+
         Serial.println(
             "Configuration loaded.");
     }
-
+	//wifi manager
+	WifiMgr.begin();
     //--------------------------------------------------
     // Outputs
     //--------------------------------------------------
@@ -203,6 +230,9 @@ void loop()
         lastRemotePoll = millis();
         RemoteKeys.update();
     }
+	
+	//wifi manager update
+	WifiMgr.update();
 
     //--------------------------------------------------
     // Time
